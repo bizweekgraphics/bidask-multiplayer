@@ -2,9 +2,11 @@
 
 var ko = require('knockout');
 
-function Ask(data) {
+function Order(data) {
   this.price = data.price;
   this.fixed = ko.observable(false);
+  this.bid = data.bid;
+  this.ask = data.ask;
 }
 
-module.exports = Ask;
+module.exports = Order;

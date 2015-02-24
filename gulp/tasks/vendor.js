@@ -9,13 +9,15 @@ var size = require('gulp-size');
 
 module.exports = function() {
 
+  console.log(libs);
+
   gulp.task('vendor', function() {
     var opts = {
       debug: true
     };
 
     var bundle = browserify(opts)
-      .transform('browserify-shim');
+      // .transform('browserify-shim');
 
 
     libs.forEach(function(lib) {
@@ -27,7 +29,7 @@ module.exports = function() {
       .pipe(source('vendor.js'))
       .pipe((gStreamify(uglify())))
       .pipe(gulp.dest('./public/build/scripts'))
-      .pipe((gStreamify(size())));
+      // .pipe((gStreamify(size())));
   });
 
 };
