@@ -29,7 +29,7 @@ module.exports = function() {
       .pipe(source('vendor.js'))
       .pipe((gStreamify(uglify())))
       .pipe(gulp.dest('./public/build/scripts'))
-      // .pipe((gStreamify(size())));
+      .pipe((gStreamify(size())));
   });
 
 };

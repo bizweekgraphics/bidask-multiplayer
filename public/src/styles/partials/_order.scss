@@ -1,0 +1,48 @@
+.offer {
+  width: 100px;
+  height: 100px;
+  float: left;
+  position: relative;
+  text-align: center;
+  font-weight: bold;
+
+  .triangle {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    width: 0;
+    height: 0;
+    border-left: 45px solid transparent;
+    border-right: 45px solid transparent;
+    border-bottom: 75px solid cyan;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .price {
+    position: relative;
+    margin-top: 55px;
+    z-index: 2;
+  }
+
+  &.ask {
+    background: transparent;
+    color: #f00;
+    z-index: 2;
+    cursor: pointer;
+
+    .triangle {
+      border-bottom-color: #0ff;
+    }
+  }
+
+  &.bid {
+    background: magenta;
+    color: #0f0;
+    z-index: 1;
+
+    .triangle {
+      border-bottom-color: white;
+    }
+  }
+}

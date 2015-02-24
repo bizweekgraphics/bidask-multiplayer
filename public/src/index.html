@@ -8,11 +8,11 @@
 </head>
 <body>
 
-  <button data-bind="click: $root.addOrder">Add offer</button>
+  <button data-bind="click: $root.addOrder">Add order</button>
 
   <div id="order-book" data-bind="foreach: orders">
 
-    <div class="offer">
+    <div class="offer" data-bind="css: side">
       <div class="triangle"></div>
       <div class="price"><span data-bind="text: price"></span></div>
     </div>
