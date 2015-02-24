@@ -1,0 +1,42 @@
+{
+  "name": "bidaskmultiplayer",
+  "version": "0.0.0",
+  "devDependencies": {
+    "browser-sync": "^1.6.5",
+    "browserify": "^6.1.0",
+    "browserify-shim": "^3.8.0",
+    "gulp": "^3.8.11",
+    "gulp-browserify": "^0.5.0",
+    "gulp-concat": "^2.4.1",
+    "gulp-jshint": "^1.9.0",
+    "gulp-minify-css": "^0.3.11",
+    "gulp-minify-html": "^0.1.6",
+    "gulp-nodemon": "^1.0.5",
+    "gulp-plumber": "^0.6.6",
+    "gulp-replace": "^0.5.0",
+    "gulp-sass": "^1.1.0",
+    "gulp-size": "^1.1.0",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^1.0.1",
+    "jshint-stylish": "^1.0.0",
+    "vinyl-source-stream": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.12.0",
+    "compression": "^1.4.1",
+    "ejs": "^2.3.1",
+    "express": "^4.12.0",
+    "method-override": "^2.3.1",
+    "morgan": "^1.5.1"
+  },
+  "optionalDependencies": {
+    "jquery-ui": "^1.10.5",
+    "knockout": "^3.3.0"
+  },
+  "browserify-shim": {
+    "jquery": "global:$"
+  }
+}
