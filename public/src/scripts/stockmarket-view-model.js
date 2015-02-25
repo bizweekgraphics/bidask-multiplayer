@@ -57,7 +57,7 @@ function StockMarketViewModel() {
 
   function updateSpread(drag, drop) {
     var spread = ko.dataFor(drop).price - ko.dataFor(drag).price;
-    ko.dataFor(drag).spread(spread);
+    ko.dataFor(drag).spread(spread.toFixed(2));
   }
 }
 

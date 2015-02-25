@@ -25,6 +25,15 @@
     z-index: 2;
   }
 
+  .spread {
+    color: white;
+    background: red;
+
+    &.positive {
+      background: green;
+    }
+  }
+
   &.ask {
     background: transparent;
     color: #f00;
