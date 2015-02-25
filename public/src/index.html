@@ -12,9 +12,11 @@
 
   <div id="order-book" data-bind="foreach: orders">
 
-    <div class="offer" data-bind="css: side">
+    <div class="order" data-bind="css: side, dragdrop: 7">
       <div class="triangle"></div>
-      <div class="price"><span data-bind="text: price"></span></div>
+      <div class="price"><span data-bind="text: spread, visible: spread"></span></div>
+      <div class="price"><span data-bind="text: price"></span>
+      </div>
     </div>
 
   </div>
