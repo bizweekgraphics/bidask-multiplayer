@@ -11,6 +11,22 @@ function StockMarketViewModel() {
 
   self.orders = ko.observableArray([]);
 
+  self.cash = ko.observable(0);
+
+  function updateCash() {
+
+    var cash = self.orders().map(function(order) {
+      return parseFloat(order.spread());      
+    }).filter(function(order) {
+      if(order) { return order; }
+    }).reduce(function(prev, curr) {
+      return prev + curr;
+    })
+
+    self.cash(cash.toFixed(2));
+  }
+
+
   self.addOrder = function() {
     var newOrder = generateOrder();
     self.orders.push(newOrder);
@@ -47,6 +63,9 @@ function StockMarketViewModel() {
         },
         out: function(event, ui) {
           ko.dataFor(ui.draggable[0]).spread(false);
+        },
+        drop: function() {
+          updateCash();
         }
       };
 
