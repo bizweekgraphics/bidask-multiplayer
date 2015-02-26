@@ -12,6 +12,7 @@
   <button data-bind="click: $root.addOrder">Add order</button>
 
   <div id="order-book" data-bind="foreach: orders">
+    
     <div data-bind = "if: side !== 'filled'">
       <div class="order" data-bind="css: side, dragdrop">
         <div class="triangle"></div>

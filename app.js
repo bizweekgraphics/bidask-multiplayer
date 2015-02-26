@@ -29,18 +29,15 @@ process.on('SIGTERM', function () {
 
 require('./config/express')(app, config);
 
-// Init websockets connection
-// var io = require('socket.io')(server, {
-//   'polling duration': 10,
-//   'transports': ['polling']
-// });
+var io = require('socket.io')(server)
 
-// io.set("transports", ["xhr-polling"]); 
-// io.set("polling duration", 10); 
+io.on('connection', function(socket) {
+  console.log('connection made');
+
+  socket.on('update', function(data) {
+    console.log('UPDATE ====================')
+    io.sockets.emit('update', data);
+  })
+});
 
 
-// var webSocket
-
-// io.on('connection', function(socket) {
-//   webSocket = socket;
-// });

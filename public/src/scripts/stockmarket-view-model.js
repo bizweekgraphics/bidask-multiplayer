@@ -7,7 +7,32 @@ require('./vendor/jquery-ui.js');
 var Order = require('./order.js');
 var FilledOrder = require('./filled-order.js');
 
+var io = require('socket.io-client');
+var host = location.origin.replace(/^http/, 'ws')
+var socket = io.connect(host);
+
 function StockMarketViewModel() {
+  socket.on('connect', function() {
+    console.log('connected');
+  })
+
+  socket.on('update', function(data) {
+    console.log(data);
+    var orders = jsonToModels(data);
+    self.orders(orders);
+  })
+
+  function jsonToModels(data) {
+    return JSON.parse(data).map(function(item) {
+      if(item.side === 'filled') {
+        return new FilledOrder(item);
+      } else {
+        return new Order(item);
+      }
+    });
+  }
+
+
   var self = this;
 
   self.orders = ko.observableArray([]);
@@ -80,6 +105,8 @@ function StockMarketViewModel() {
 
           self.orders()[dropIndex] = filledOrder;
           self.orders.splice(dragIndex, 1);
+
+          socket.emit('update', ko.toJSON(self.orders()));
 
           updateCash();
         }
