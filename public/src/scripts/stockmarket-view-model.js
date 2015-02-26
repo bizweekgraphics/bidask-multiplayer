@@ -5,27 +5,13 @@ var d3 = require('d3');
 var $ = require('jquery');
 require('./vendor/jquery-ui.js');
 var Order = require('./order.js');
+var FilledOrder = require('./filled-order.js');
 
 function StockMarketViewModel() {
   var self = this;
 
   self.orders = ko.observableArray([]);
-
   self.cash = ko.observable(0);
-
-  function updateCash() {
-
-    var cash = self.orders().map(function(order) {
-      return parseFloat(order.spread());      
-    }).filter(function(order) {
-      if(order) { return order; }
-    }).reduce(function(prev, curr) {
-      return prev + curr;
-    })
-
-    self.cash(cash.toFixed(2));
-  }
-
 
   self.addOrder = function() {
     var newOrder = generateOrder();
@@ -40,6 +26,24 @@ function StockMarketViewModel() {
     var price = d3.random.normal(priceMean, priceStdev)().toFixed(2);
 
     return new Order({price: price, side: side})
+  }
+
+  function updateSpread(drag, drop) {
+    var spread = ko.dataFor(drop).price - ko.dataFor(drag).price;
+    ko.dataFor(drag).spread(parseFloat(spread.toFixed(2)));
+  }
+
+  function updateCash() {
+
+    var cash = self.orders().filter(function(order) {
+      return order.side === 'filled';
+    }).map(function(order) {
+      return parseFloat(order.spread());
+    }).reduce(function(prev, curr) {
+      return prev + curr;
+    });
+
+    self.cash(cash.toFixed(2));
   }
 
   ko.bindingHandlers.dragdrop = {
@@ -64,7 +68,19 @@ function StockMarketViewModel() {
         out: function(event, ui) {
           ko.dataFor(ui.draggable[0]).spread(false);
         },
-        drop: function() {
+        drop: function(event, ui) {
+          var dragData = ko.dataFor(ui.draggable[0]);
+          var dropData = ko.dataFor(event.target);
+
+
+          var dragIndex = self.orders.indexOf(dragData);
+          var dropIndex = self.orders.indexOf(dropData);   
+
+          var filledOrder = new FilledOrder({spread: dragData.spread()})
+
+          self.orders()[dropIndex] = filledOrder;
+          self.orders.splice(dragIndex, 1);
+
           updateCash();
         }
       };
@@ -72,11 +88,6 @@ function StockMarketViewModel() {
       viewModel.side === 'ask' ? orderEl.draggable(dragConfig) : orderEl.droppable(dropConfig);
 
     }
-  }
-
-  function updateSpread(drag, drop) {
-    var spread = ko.dataFor(drop).price - ko.dataFor(drag).price;
-    ko.dataFor(drag).spread(spread.toFixed(2));
   }
 }
 
