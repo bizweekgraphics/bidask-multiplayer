@@ -6,29 +6,38 @@ var $ = require('jquery');
 require('./vendor/jquery-ui.js');
 var Order = require('./order.js');
 var FilledOrder = require('./filled-order.js');
+var Player = require('./player');
 
-var io = require('socket.io-client');
-var host = location.origin.replace(/^http/, 'ws')
-var socket = io.connect(host);
+var socket = require('./websockets.js');
 
 function StockMarketViewModel() {
   socket.on('connect', function() {
-    console.log('connected');
+    self.player = 'player' + Date.now();
+    socket.emit('new-player', self.player);
   })
 
   socket.on('update', function(data) {
-    console.log(data);
     var orders = jsonToModels(data);
     self.orders(orders);
+    updateCash();
+  })
+
+  socket.on('new-offer', function(data) {
+    console.log('new offer')
+    var newOrder = new Order(data);
+    self.orders.push(newOrder);
+  });
+
+  socket.on('new-player', function(data) {
+    if(self.players.indexOf(data) === -1) {
+      var newPlayer = new Player({name: data});
+      self.players.push(newPlayer);    
+    }
   })
 
   function jsonToModels(data) {
     return JSON.parse(data).map(function(item) {
-      if(item.side === 'filled') {
-        return new FilledOrder(item);
-      } else {
-        return new Order(item);
-      }
+      return item.side === 'filled' ? new FilledOrder(item) : new Order(item);
     });
   }
 
@@ -37,21 +46,8 @@ function StockMarketViewModel() {
 
   self.orders = ko.observableArray([]);
   self.cash = ko.observable(0);
-
-  self.addOrder = function() {
-    var newOrder = generateOrder();
-    self.orders.push(newOrder);
-  }
-
-  function generateOrder() {
-    var priceMean = 19.02;
-    var priceStdev = 4;
-
-    var side = Math.random() < 0.5 ? 'bid' : 'ask';
-    var price = d3.random.normal(priceMean, priceStdev)().toFixed(2);
-
-    return new Order({price: price, side: side})
-  }
+  self.players = ko.observableArray([])
+  self.player;
 
   function updateSpread(drag, drop) {
     var spread = ko.dataFor(drop).price - ko.dataFor(drag).price;
@@ -59,16 +55,20 @@ function StockMarketViewModel() {
   }
 
   function updateCash() {
+    self.players().forEach(function(player, index) {
+      var cash = self.orders().filter(function(order) {
+        return order.side === 'filled' && order.player === player.name;
+      }).map(function(order) {
+        return parseFloat(order.spread());
+      }).reduce(function(prev, curr) {
+        return prev + curr;
+      }, 0);
 
-    var cash = self.orders().filter(function(order) {
-      return order.side === 'filled';
-    }).map(function(order) {
-      return parseFloat(order.spread());
-    }).reduce(function(prev, curr) {
-      return prev + curr;
-    });
+      self.players()[index].cash(cash);
+    })
 
-    self.cash(cash.toFixed(2));
+    console.log(self.players());
+
   }
 
   ko.bindingHandlers.dragdrop = {
@@ -101,14 +101,13 @@ function StockMarketViewModel() {
           var dragIndex = self.orders.indexOf(dragData);
           var dropIndex = self.orders.indexOf(dropData);   
 
-          var filledOrder = new FilledOrder({spread: dragData.spread()})
+          var filledOrder = new FilledOrder({player: self.player, spread: dragData.spread()})
 
           self.orders()[dropIndex] = filledOrder;
           self.orders.splice(dragIndex, 1);
 
           socket.emit('update', ko.toJSON(self.orders()));
 
-          updateCash();
         }
       };
 

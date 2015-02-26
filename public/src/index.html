@@ -8,8 +8,12 @@
 </head>
 <body>
 
-  <span data-bind="text: cash()"></span>
-  <button data-bind="click: $root.addOrder">Add order</button>
+  <div class="players" data-bind="foreach: players">
+    <p><span data-bind="text: name"></span></p>
+    <p>Cash: $<span data-bind="text: cash"></span></p>
+  </div>
+    <!-- <span data-bind="text: cash()"></span> -->
+  <!-- <button data-bind="click: $root.addOrder">Add order</button> -->
 
   <div id="order-book" data-bind="foreach: orders">
     

@@ -30,14 +30,6 @@ process.on('SIGTERM', function () {
 require('./config/express')(app, config);
 
 var io = require('socket.io')(server)
-
-io.on('connection', function(socket) {
-  console.log('connection made');
-
-  socket.on('update', function(data) {
-    console.log('UPDATE ====================')
-    io.sockets.emit('update', data);
-  })
-});
+require('./libs/wss-controller.js')(io);
 
 
